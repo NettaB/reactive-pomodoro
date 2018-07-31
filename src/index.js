@@ -1,5 +1,5 @@
-import { from, merge, fromEvent, interval } from 'rxjs';
-import { map, tap, mergeMap, distinctUntilChanged, switchMap } from 'rxjs/operators';
+import {from, merge, fromEvent, interval} from 'rxjs';
+import {map, tap, mergeMap, distinctUntilChanged, switchMap, filter, debounceTime, delay} from 'rxjs/operators';
 
 console.log(`Hello there!`);
 
@@ -10,56 +10,97 @@ const summerFruit = [
     {type: 'grapes', color: 'white'},
     {type: 'melon', color: 'white'}
 ];
+const summerFruit$ = from(summerFruit);
 
 const winterFruit = [
-    {type: 'apple', color: 'green'},
-    {type: 'pear', color: 'red'},
-    {type: 'apple', color: 'yellow'},
-    {type: 'apple', color: 'red'},
-    {type: 'pear', color: 'green'}
+    {type: 'apple', color: 'LimeGreen'},
+    {type: 'pear', color: 'FireBrick'},
+    {type: 'apple', color: 'Gold'},
+    {type: 'apple', color: 'FireBrick'},
+    {type: 'pear', color: 'LimeGreen'}
 ];
-const summerFruitStream = from(summerFruit);
-const winterFruitStream = from(winterFruit);
 
-//
-// // Using tap to perform side-effects
-// summerFruitStream
-//     .pipe(
-//         tap((fruit) => {
-//             console.log('%c' + fruit.type, 'color:' + fruit.color + '; background-color: black');
-//             return fruit;
-//         })
-//     ).subscribe();
-//
-// //Using map to alter observable
-// winterFruitStream
-//     .pipe(
-//         map(fruit => fruit.color)
-//     ).subscribe((color) => { console.log('%c' + color, 'color: ' + color) });
-//
-// //Using merge to create a stream out of two streams
-// const allFruitStream = merge(summerFruitStream, winterFruitStream);
-// allFruitStream.pipe(
-//     tap((fruit) => {
-//         console.log(fruit);
-//         return fruit;
-//     })
-// ).subscribe();
-//
-// //Using distinctUntilChanged to create a stream of fruits with distinct type
-// summerFruitStream.pipe(
-//     tap((fruit) => {
-//         console.log(fruit);
-//         return fruit
-//     }),
-//     distinctUntilChanged((a, b) => a.type === b.type)
-// ).subscribe((fruit) => console.log('distinct fruit', fruit));
+const winterFruit$ = from(winterFruit);
+const button = document.getElementsByTagName('button');
+const clickObservable = fromEvent(button, 'click');
+
+// Using tap to perform side-effects
+summerFruit$
+    .pipe(
+        tap((fruit) => {
+            console.log('%c' + fruit.type, 'color:' + fruit.color);
+            return fruit;
+        })
+    ).subscribe();
+
+//but you can generally achieve almost everything via 'subscribe'
+
+summerFruit$.subscribe((fruit) => { console.log(`this is a ${fruit.color} ${fruit.type}`) });
+
+//Using map to return a different observable
+summerFruit$
+    .pipe(
+        map(fruit => fruit.color)
+    ).subscribe((color) => {
+    console.log('%c' + color, 'color: ' + color)
+});
+
+//Using distinctUntilChanged to create a stream of fruits with distinct type
+summerFruit$.pipe(
+    tap((fruit) => {
+        console.log(fruit);
+        return fruit
+    }),
+    distinctUntilChanged((a, b) => a.type === b.type)
+).subscribe((fruit) => console.log('distinct fruit', fruit));
+
+//Using merge to create a stream out of two streams
+const allFruit$ = merge(summerFruit$, winterFruit$);
+allFruit$.pipe(
+    tap((fruit) => {
+        console.log(fruit);
+        return fruit;
+    })
+).subscribe();
 
 
-// summerFruitStream.pipe(
-//     mergeMap((fruit) => {
-//         winterFruitStream.pipe(
-//             map(fruit => fruit.type)
-//         )
-//     })
-// ).subscribe((val) => console.log(val));
+// mergeMap - subscribes to an observable of a certain type, and returns an observable of another type
+// this will return the full winterFruit$ for each value emitted from summerFruit$
+summerFruit$.pipe(
+    mergeMap((fruit) => {
+        return winterFruit$
+    })
+).subscribe((val) => console.log(val));
+
+
+// mergeMap - finally! piping the winterFruit$ through the filter operator allows us to return only what we want
+summerFruit$.pipe(
+    mergeMap((summerFruit, i) => {
+        return winterFruit$.pipe(
+            filter((winterFruit, j) => i === j),
+            map((winterFruit) => {
+                return {winterFruit, summerFruit}
+            })
+        )
+    })
+).subscribe((fruitObject) => console.table(fruitObject));
+
+
+clickObservable.pipe(
+    delay(1000),
+    mergeMap((event) => {
+        return summerFruit$
+    })
+).subscribe((val) => {
+    console.log(val)
+});
+
+clickObservable.pipe(
+    delay(1000),
+    switchMap((event) => {
+        return summerFruit$
+    })
+).subscribe((val) => {
+    console.log(val)
+});
+
