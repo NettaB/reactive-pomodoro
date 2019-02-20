@@ -1,18 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>RxJS Playground</title>
-    </head>
-    <body>
-        <h3>Pomodoro</h3>
-        <div id="timer">timer</div>
-        <div id="buttons">
-            <button id="start">start</button>
-            <button id="pause">pause</button>
+
+<head>
+    <meta charset="UTF-8">
+    <title>RxJS Playground</title>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"
+        integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="./styles.css" />
+</head>
+
+<body>
+    <div id="container">
+        <nav><i class="fas fa-cog" id="settings"></i></nav>
+        <div id="duration-selector">
+            <div>
+                <input type="number" id="minutes" min="0" max="60">
+                <label for="minutes">minutes</label>
+            </div>
+            <button id="set-duration">set</button>
         </div>
-        <div id="setCount"></div>
-        <script src="./main.js"></script>
-    </body>
+        <header>
+            <h1 id="timer">25:00</h1>
+        </header>
+        <div id="buttons">
+            <button id="start"><i class="fas fa-play"></i></button>
+            <button id="pause"><i class="fas fa-pause"></i></button>
+            <button id="restart"><i class="fas fa-undo-alt"></i></button>
+        </div>
+    </div>
+
+    <script src="./main.js"></script>
+</body>
 
 </html>

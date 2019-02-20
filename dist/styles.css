@@ -1,0 +1,81 @@
+body {
+    font-family: 'Open Sans', sans-serif;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#container {
+    display: flex;
+    padding: 10px;
+    border-radius: 4px;
+    flex-direction: column;
+    justify-content: space-around;
+    /* background: #fffff4; */
+    background: #F2F1E8;
+    width: 200px;
+    height: 300px;
+}
+
+#container nav {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.fa-cog {
+    cursor: pointer;
+}
+
+#container #duration-selector {
+    height: 100px;
+    width: 200px;
+    position: absolute;
+    background-color: #0D698B;
+    visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    font-size: 20px;
+    color: #050533;
+}
+
+#duration-selector button {
+    border: none;
+    font-size: 20px;
+    background-color: #E34234;
+    color: #050533;
+}
+
+#container header {
+    display: flex;
+    justify-content: center;
+}
+
+#container header h1 {
+    font-size: 68px;
+    color: #050533
+}
+
+#container #buttons {
+    display: flex;
+    justify-content: space-around;
+}
+
+#buttons button {
+    height: 54px;
+    width: 54px;
+    border-radius: 4px;
+    font-size: 36px;
+    border: none;
+    text-align: center;
+    background-color: #E34234;
+    color: #050533;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 1px 1px 4px 0px #ccc;
+    cursor: pointer;
+}
+
