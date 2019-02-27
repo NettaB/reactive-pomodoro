@@ -4,6 +4,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    background-size: cover;
 }
 
 #container {
@@ -12,7 +13,6 @@ body {
     border-radius: 4px;
     flex-direction: column;
     justify-content: space-around;
-    /* background: #fffff4; */
     background: #F2F1E8;
     width: 200px;
     height: 300px;
@@ -31,7 +31,7 @@ body {
     height: 100px;
     width: 200px;
     position: absolute;
-    background-color: #0D698B;
+    background-color: #51858b;
     visibility: hidden;
     display: flex;
     flex-direction: column;
@@ -39,13 +39,28 @@ body {
     align-items: center;
     font-size: 20px;
     color: #050533;
+    border-radius: 2px;
+    box-shadow: 1px 1px 4px 0px #ccc;
 }
 
 #duration-selector button {
     border: none;
     font-size: 20px;
-    background-color: #E34234;
+    background-color: #fcc853;
     color: #050533;
+    border-radius: 1px;
+}
+
+#duration-selector div {
+    display: flex;
+    justify-content: space-around;
+}
+#duration-selector input {
+    width: 40%;
+    border: none;
+    box-sizing: border-box;
+    padding: 0 4px;
+    background: #F2F1E8;
 }
 
 #container header {
@@ -55,7 +70,7 @@ body {
 
 #container header h1 {
     font-size: 68px;
-    color: #050533
+    color: #51858b
 }
 
 #container #buttons {
@@ -70,7 +85,8 @@ body {
     font-size: 36px;
     border: none;
     text-align: center;
-    background-color: #E34234;
+    background-color: #fcc853;
+    /* background-color: #c7a59b; */
     color: #050533;
     display: flex;
     justify-content: center;

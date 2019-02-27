@@ -1,17 +1,16 @@
-import { fromEvent, merge, interval, of, empty, timer } from 'rxjs';
-import { map, tap, filter, takeWhile, switchMap, withLatestFrom, share, startWith, mapTo } from 'rxjs/operators';
+import { fromEvent, merge, NEVER, timer } from 'rxjs';
+import { map, tap, takeWhile, switchMap, withLatestFrom, share, mapTo, switchMapTo, filter, sample } from 'rxjs/operators';
 import { startBtn, pauseBtn, resetBtn } from './inputs';
 import { body, timerDisplay } from './outputs';
-import { latestTimer$ } from './store';
+import { latestTimer$, initialDuration$ } from './state';
 
 import { save$ } from './duration-selector';
 import { imageUrl$ } from './image-url';
 
-const backgroundImage$ = interval(60000).pipe(
-    startWith(0),
-    switchMap(() => imageUrl$)
+const backgroundImage$ = timer(0, 60000).pipe(
+    switchMapTo(imageUrl$)
 );
-backgroundImage$.subscribe((imageUrl) => {body.style.background = `url(${imageUrl}) center center no-repeat fixed border-box padding-box`});
+backgroundImage$.subscribe((imageUrl) => {body.style.backgroundImage = `url(${imageUrl})`});
 
 // observable creation from inputs
 const start$ = fromEvent(startBtn, 'click').pipe(mapTo(1));
@@ -22,28 +21,39 @@ const reset$ = fromEvent(resetBtn, 'click');
 
 const stopTimer$ = merge(pause$, reset$).pipe(mapTo(0));
 
-const timer$ = merge(start$, stopTimer$).pipe(
-    switchMap((val) => val ? timer(0, 1000) : empty()),
-    startWith(0),
+const countdown = () => timer(0, 1000).pipe(
     withLatestFrom(latestTimer$),
     map(([i, lastValue]) => lastValue - i),
+    takeWhile(secs => secs >= 0),
+)
+
+const timer$ = merge(start$, stopTimer$).pipe(
+    switchMap((val) => val ? countdown() : NEVER),
     share()
 )
 
-const pausedTimerValue$ = pause$.pipe(
-    withLatestFrom(timer$),
-    map(([e, lastTimer]) => lastTimer));
 
-const resetTimerValue$ = reset$.pipe(mapTo(1500));
+
+const pausedTimerValue$ = timer$.pipe(sample(pause$))
+
+const resetTimerValue$ = merge(reset$, save$).pipe(
+    withLatestFrom(initialDuration$),
+    map(([e, duration]) => duration)
+);
 
 merge(pausedTimerValue$, resetTimerValue$).subscribe(latestTimer$);
 
-const timerDisplay$ = merge(timer$, resetTimerValue$).pipe(
-    map(ms => `${Math.floor(ms / 60)}:${(ms % 60).toLocaleString('en-US', { minimumIntegerDigits: 2 })}`))
+const timerDisplayFormatter = ms =>
+`${Math.floor(ms / 60)}:${(ms % 60).toLocaleString('en-US', { minimumIntegerDigits: 2 })}`;
 
-timerDisplay$.subscribe((timer) => {
-    timerDisplay.innerHTML = timer
-    },
-    () => {},
-    () => alert(`time's up!!`)
-);
+const resetTimerDisplay$ = resetTimerValue$.pipe(map(timerDisplayFormatter));
+
+const timerDisplay$ = timer$.pipe(map(timerDisplayFormatter));
+
+const updateTimerDisplay = timer => timerDisplay.innerHTML = timer;
+
+resetTimerDisplay$.subscribe(updateTimerDisplay);
+
+timerDisplay$.subscribe(updateTimerDisplay);
+
+timer$.pipe(filter(val => val === 0)).subscribe(() => {alert(`you're done!`)});
