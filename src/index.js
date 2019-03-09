@@ -20,7 +20,6 @@ const start$ = fromEvent(startBtn, 'click')
 
 
 
-
 const pause$ = fromEvent(pauseBtn, 'click');
 const reset$ = fromEvent(resetBtn, 'click');
 
