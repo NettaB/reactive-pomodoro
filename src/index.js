@@ -1,5 +1,5 @@
 import { fromEvent, merge, NEVER, timer } from 'rxjs';
-import { map, tap, takeWhile, switchMap, withLatestFrom, share, mapTo, switchMapTo, filter, sample } from 'rxjs/operators';
+import { map, tap, takeWhile, switchMap, withLatestFrom, share, mapTo, switchMapTo, filter, sample, exhaustMap } from 'rxjs/operators';
 import { startBtn, pauseBtn, resetBtn } from './inputs';
 import { body, timerDisplay } from './outputs';
 import { latestTimer$, initialDuration$ } from './state';
@@ -13,7 +13,14 @@ const backgroundImage$ = timer(0, 60000).pipe(
 backgroundImage$.subscribe((imageUrl) => {body.style.backgroundImage = `url(${imageUrl})`});
 
 // observable creation from inputs
-const start$ = fromEvent(startBtn, 'click').pipe(mapTo(1));
+const start$ = fromEvent(startBtn, 'click')
+
+
+
+
+
+
+
 const pause$ = fromEvent(pauseBtn, 'click');
 const reset$ = fromEvent(resetBtn, 'click');
 
